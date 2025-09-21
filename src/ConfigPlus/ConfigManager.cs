@@ -15,13 +15,13 @@ namespace ConfigPlus
         private static IConfiguration? _configuration;
         private static ConfigurationOptions _globalOptions = new();
 
-        public static void Initialize(IConfiguration configuration, ConfigurationOptions options = null)
+        public static void Initialize(IConfiguration configuration, ConfigurationOptions? options = null)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _globalOptions = options ?? new ConfigurationOptions();
         }
 
-        public static ConfigurationResult<T> Get<T>(string sectionPath, ConfigurationOptions options = null) where T : class, new()
+        public static ConfigurationResult<T> Get<T>(string sectionPath, ConfigurationOptions? options = null) where T : class, new()
         {
             if (_configuration == null)
                 throw new InvalidOperationException("ConfigManager is not initialized. Call Initialize() method first.");
@@ -56,7 +56,7 @@ namespace ConfigPlus
                         return ConfigurationResult<T>.Failure(validationResults, sectionPath, effectiveOptions.Environment);
                 }
 
-                return ConfigurationResult<T>.Success(configValue, sectionPath, null);
+                return ConfigurationResult<T>.Success(configValue, sectionPath, effectiveOptions.Environment);
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace ConfigPlus
             }
         }
 
-        public static ConfigurationResult<T> GetForEnvironment<T>(string sectionPath, string environment, ConfigurationOptions options = null) where T : class, new()
+        public static ConfigurationResult<T> GetForEnvironment<T>(string sectionPath, string environment, ConfigurationOptions? options = null) where T : class, new()
         {
             var envOptions = options ?? new ConfigurationOptions();
             envOptions.Environment = environment;

@@ -4,4 +4,5 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="src/ConfigPlus/ConfigPlus.csproj" />
+  <Project Path="tests/ConfigPlus.Tests/ConfigPlus.Tests.csproj" Id="af7c5d70-d21d-43ac-8f7b-fc2006661cc2" />
 </Solution>
