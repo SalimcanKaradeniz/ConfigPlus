@@ -13,11 +13,5 @@ namespace ConfigPlus.Models
         public bool ValidateDataAnnotations { get; set; } = true;
 
         public bool ThrowOnError { get; set; } = false;
-
-        public bool UseCache { get; set; } = true;
-
-        public int CacheDurationSeconds { get; set; } = 300;
-
-        public bool EnableHotReload { get; set; } = false;
     }
 }
