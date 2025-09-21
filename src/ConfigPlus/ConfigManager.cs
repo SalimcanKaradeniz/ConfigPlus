@@ -1,4 +1,5 @@
-﻿using ConfigPlus.Models;
+﻿using ConfigPlus.Exceptions;
+using ConfigPlus.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,7 @@ namespace ConfigPlus
                 {
                     var validationResults = ValidateConfiguration(configValue);
                     if (validationResults.Any())
-                        return ConfigurationResult<T>.Failure(validationResults, sectionPath,effectiveOptions.Environment);
+                        return ConfigurationResult<T>.Failure(validationResults, sectionPath, effectiveOptions.Environment);
                 }
 
                 return ConfigurationResult<T>.Success(configValue, sectionPath, null);
@@ -60,7 +61,7 @@ namespace ConfigPlus
             catch (Exception ex)
             {
                 return ConfigurationResult<T>.Failure(
-                    new[] 
+                    new[]
                     { new ValidationResult($"Configuration binding error: {ex.Message}") },
                     sectionPath,
                     null);
@@ -79,10 +80,42 @@ namespace ConfigPlus
         {
             var validationOptions = options ?? new ConfigurationOptions();
             validationOptions.ThrowOnError = true;
-            
+
             return Get<T>(sectionPath, validationOptions);
         }
 
+        public static List<ConfigurationException> ValidateAllConfigurations(Dictionary<string, Type> configurationSections)
+        {
+            var errors = new List<ConfigurationException>();
+
+            foreach (var (sectionPath, configType) in configurationSections)
+            {
+                try
+                {
+                    var method = typeof(ConfigManager).GetMethod(nameof(GetValidated))!.MakeGenericMethod(configType);
+                    var result = method.Invoke(null, new object[] { sectionPath, null });
+
+                    var isValidProperty = result!.GetType().GetProperty(nameof(ConfigurationResult<object>.IsValid))!;
+                    var isValid = (bool)isValidProperty.GetValue(result)!;
+
+                    if (!isValid) 
+                    {
+                        var errorsProperty = result.GetType().GetProperty(nameof(ConfigurationResult<object>.ValidationErrors))!;
+                        var validationErrors = (IReadOnlyList<ValidationResult>)errorsProperty.GetValue(result)!;
+
+                        var errorMessages = string.Join(", ", validationErrors.Select(e => e.ErrorMessage));
+                        errors.Add(new ConfigurationException(sectionPath, $"Validation failed: {errorMessages}"));
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new ConfigurationException(sectionPath, $"Configuration error: {ex.Message}", ex));
+                }
+            }
+
+            return errors;
+        }
 
         #region Private Methods
         private static string BuildEffectivePath(string sectionPath, string? environment)

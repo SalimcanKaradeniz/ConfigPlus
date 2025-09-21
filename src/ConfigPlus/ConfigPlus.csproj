@@ -20,7 +20,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/SalimcanKaradeniz/ConfigPlus</PackageProjectUrl>
-		<!--<PackageReadmeFile>README.md</PackageReadmeFile>-->
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>Initial release with type-safe configuration binding and environment-specific overrides</PackageReleaseNotes>
 	
 	</PropertyGroup>
@@ -33,7 +33,7 @@
 		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
 	</ItemGroup>
 
-	<!--<ItemGroup>
-		<None Include="..\..\README.md" Pack="false" PackagePath="\" />
-	</ItemGroup>-->
+	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 </Project>
