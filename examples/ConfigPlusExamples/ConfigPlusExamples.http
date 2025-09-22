@@ -1,0 +1,6 @@
+@ConfigPlusExamples_HostAddress = http://localhost:5077
+
+GET {{ConfigPlusExamples_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
